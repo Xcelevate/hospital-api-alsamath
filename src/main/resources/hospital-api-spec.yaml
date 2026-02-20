@@ -1,0 +1,95 @@
+openapi: 3.0.0
+info :
+  title: Hospital Patient Management API
+  version: 1.0.0
+
+paths:
+  /patients:
+
+    post: #Regular new patient
+      summary: Create patient
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ name,dob ]
+              properties:
+                name: { type: string, example: "John Doe" }
+                dob: { type: string, format: date,example: "1980-01-15" }
+                gender: { type: string, enum: [ M,F,O ] }
+                phone: { type: string,example: "+919876543210" }
+        
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: {type: string,example : "patient-123"}
+                  name: {type: string}
+        '400':{description: "Validation error"}
+
+    get: #List Patients
+      parameters:
+          name : limit
+          in : query
+          schema : {type: integer, default: 10}
+
+      responses :
+        '200':
+          content :
+            application /json :
+              schema :
+                type : array
+                items:
+                  type: object
+                  properties :
+                    id : {type: string}
+                    name :{type: string}
+
+  /patients/{id} :
+    get :
+      parameters:
+        name : id
+        in : path
+        required : true
+        schema : {type : string}
+
+      responses :
+        '200' : { description : "Patient Found"}
+        '404' : { description : "Patient not found "}
+
+  /patients/{id}/appointments :
+    post: #Schedule appointment
+      parameters :
+        name : id
+        in : path
+        required : true
+        schema  : { type : string}
+
+      requestBody :
+        content :
+          application/json :
+            schema :
+              type : object
+              required : [doctorId,date,time]
+              properties :
+                  doctorId : {type : string, example : "doctor-456"}
+                  date : {type: string , format: date , example : "2026-02-20"}
+                  time : {type : string, example : "10.00"}
+
+      responses :
+        '201' : {description : "Appointment created"}
+
+    get : #View appointments
+      parameters :
+        name: id
+        path : in
+        required : true
+        schema : {type : string}
+
+      responses :
+        '200' : {description : "List of appointments"}
+
